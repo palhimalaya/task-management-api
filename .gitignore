@@ -1,0 +1,15 @@
+# Environments
+.env
+.env.*
+.env.development
+.env.production
+
+# Python
+__pycache__/
+.venv/
+
+# Testing
+.pytest_cache/
+
+# Documentation
+docs.md
