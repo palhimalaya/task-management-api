@@ -1,8 +1,11 @@
+from alembic.environment import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Role(Base):

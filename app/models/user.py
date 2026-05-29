@@ -1,9 +1,12 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
+from alembic.environment import TYPE_CHECKING
 
 from app.db.base import Base
-from app.models.role import Role
-from app.models.task import Task
+
+if TYPE_CHECKING:
+    from app.models.role import Role
+    from app.models.task import Task
 
 
 class User(Base):
