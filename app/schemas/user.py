@@ -9,3 +9,10 @@ class UserOut(BaseModel):
     is_active: bool
 
     model_config = {"from_attributes": True}
+
+
+class PaginatedUsersOut(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    items: list[UserOut]
