@@ -101,6 +101,32 @@ All protected endpoints require: `Authorization: Bearer <token>`
 | DELETE | `/tasks/{id}`        | Delete task              | ADMIN          |
 | PATCH  | `/tasks/{id}/assign` | Assign task              | ADMIN, MANAGER |
 
+### API Usage Flow
+
+1. Start the stack with `docker-compose up --build`.
+2. Open Swagger UI at `http://localhost:8000/docs`, or import the Postman collection from `docs/task-management-api.postman_collection.json`.
+3. Log in with one of the seeded dev accounts:
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "changeme123"
+}
+```
+
+4. Copy `data.access_token` from the response and send it as a bearer token for protected endpoints.
+5. Create a task as ADMIN or MANAGER:
+
+```json
+{
+  "title": "Prepare project demo",
+  "description": "Create a short walkthrough for the submission",
+  "assigned_to": 3
+}
+```
+
+6. Test role-specific behavior by logging in as `manager@example.com` or `user@example.com`.
+
 ---
 
 ## RBAC & Permission Policy
@@ -124,6 +150,80 @@ TaskPolicy(user, task)
 | Delete task             | ✅    | ❌                  | ❌                     |
 
 **Status workflow:** `PENDING → IN_PROGRESS → COMPLETED` (no backwards transitions)
+
+---
+
+## Database Structure
+
+Database changes are managed with Alembic migrations in `alembic/versions/`.
+
+Current schema:
+
+```text
+roles
+├── id          integer primary key
+└── name        varchar(50), unique, not null
+
+users
+├── id            integer primary key
+├── full_name     varchar(100), nullable
+├── email         varchar(100), unique, indexed, not null
+├── password_hash varchar(255), not null
+├── is_active     boolean, not null
+└── role_id       integer, foreign key -> roles.id
+
+tasks
+├── id          integer primary key
+├── title       varchar(100), not null
+├── description text, nullable
+├── status      enum(PENDING, IN_PROGRESS, COMPLETED), not null
+├── due_date    timestamptz, nullable
+├── created_at  timestamptz, not null, default now()
+├── updated_at  timestamptz, not null, default now()
+├── created_by  integer, foreign key -> users.id, nullable
+└── assigned_to integer, foreign key -> users.id, nullable
+```
+
+Relationships:
+
+- One role has many users.
+- One user can create many tasks through `tasks.created_by`.
+- One user can be assigned many tasks through `tasks.assigned_to`.
+- Tasks may be unassigned.
+
+Migration files:
+
+- `330d3a9f866f_create_initial_schema.py`
+- `d9c36a93b71b_add_full_name_to_user.py`
+
+---
+
+## API Testing Collection
+
+A Postman collection is included at:
+
+```text
+docs/task-management-api.postman_collection.json
+```
+
+Import it into Postman, run one of the login requests, and the collection stores `access_token` automatically for protected requests. The collection also includes variables for `base_url`, `task_id`, and `user_id`.
+
+Swagger is also available while the app is running:
+
+- Swagger UI: `http://localhost:8000/docs`
+- OpenAPI JSON: `http://localhost:8000/openapi.json`
+
+---
+
+## Assumptions & Limitations
+
+- Seeded dev accounts are for local testing only and should be disabled in production by leaving seed env vars blank.
+- Public registration always creates a `USER`; manager/admin accounts are created through seed configuration for this assignment.
+- The API uses JWT bearer authentication but does not implement refresh tokens.
+- Task deletion is a hard delete.
+- Status transitions only block moving `COMPLETED` tasks back to `PENDING` or `IN_PROGRESS`.
+- CORS is open for development.
+- Unit tests cover services and policies; full integration tests against PostgreSQL are not included.
 
 ---
 
@@ -157,6 +257,7 @@ TaskPolicy(user, task)
 ├── docker-compose.yml         # Local API + PostgreSQL stack
 ├── Dockerfile                 # API container image
 ├── alembic.ini                # Alembic configuration
+├── docs/                      # API testing collection
 ├── pytest.ini                 # Pytest configuration
 ├── requirements.txt           # Python dependencies
 └── README.md
