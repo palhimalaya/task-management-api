@@ -14,7 +14,7 @@ class Role(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
 
-    users: Mapped[list["User"]] = relationship("User", back_populates="roles")
+    users: Mapped[list["User"]] = relationship("User", back_populates="role")
 
     def __repr__(self) -> str:
         return f"<Role(id={self.id}, name='{self.name}')>"
