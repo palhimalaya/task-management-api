@@ -29,6 +29,8 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json",
         openapi_tags=[
             {"name": "Authentication", "description": "Register and login operations"},
+            {"name": "Users", "description": "User management — ADMIN only"},
+            {"name": "Tasks", "description": "Task CRUD with role-based access"},
         ],
     )
 

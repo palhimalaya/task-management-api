@@ -1,6 +1,6 @@
-from sqlalchemy import Boolean, Column, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from alembic.environment import TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from app.db.base import Base
 
@@ -13,6 +13,10 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
+    full_name: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
     email: Mapped[str] = mapped_column(
         String(100), unique=True, nullable=False, index=True
     )
@@ -20,7 +24,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), nullable=False)
-    roles: Mapped["Role"] = relationship(
+    role: Mapped["Role"] = relationship(
         "Role",
         back_populates="users",
     )
