@@ -103,6 +103,7 @@ async def assign_task(
     await _validate_assignee_exists(payload.assigned_to, db)
     task.assigned_to = payload.assigned_to
     await db.flush()
+    await db.refresh(task)
     return task
 
 

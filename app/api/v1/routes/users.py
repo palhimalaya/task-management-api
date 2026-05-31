@@ -39,10 +39,19 @@ async def list_users(
         total=total,
         page=page,
         page_size=page_size,
-        items=[UserOut.model_validate(user) for user in users],
+        items=[
+            UserOut(
+                id=user.id,
+                full_name=user.full_name,
+                email=user.email,
+                role=user.role.name,
+                is_active=user.is_active,
+            )
+            for user in users
+        ],
     )
 
     return success(
         data=data,
-        message=f"{total} user(s) found",
+        message="Users retrieved successfully",
     )

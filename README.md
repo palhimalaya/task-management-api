@@ -13,18 +13,19 @@ docker-compose up --build
 - API: `http://localhost:8000`
 - Swagger UI: `http://localhost:8000/docs`
 
-### Default Admin Account (dev only)
+### Default Dev Accounts
 
-On first startup, a seeded **ADMIN** user is automatically created using the credentials from `.env`:
+On startup, optional seed users are created from the credentials in the environment. Docker Compose includes one account for each role so you can quickly test RBAC flows:
 
-| Field    | Value               |
-| -------- | ------------------- |
-| Email    | `admin@example.com` |
-| Password | `changeme123`       |
+| Role    | Email                 | Password      |
+| ------- | --------------------- | ------------- |
+| ADMIN   | `admin@example.com`   | `changeme123` |
+| MANAGER | `manager@example.com` | `changeme123` |
+| USER    | `user@example.com`    | `changeme123` |
 
-Use these to log in via `/api/v1/auth/login` and get a JWT for testing admin-only endpoints.
+Use these to log in via `/api/v1/auth/login` and get a JWT for testing role-scoped endpoints.
 
-> **⚠️ Production:** Remove `ADMIN_EMAIL` and `ADMIN_PASSWORD` from your environment (or leave them blank). The seed is skipped when these vars are unset — no hardcoded credentials are created.
+> **⚠️ Production:** Remove the seed email/password variables from your environment (or leave them blank). Seeds are skipped when these vars are unset — no hardcoded credentials are created.
 
 ---
 
@@ -64,6 +65,10 @@ uvicorn app.main:app --reload
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Token TTL (default: `30`)                               |
 | `ADMIN_EMAIL`                 | Seed admin email — **dev only, leave blank in prod**    |
 | `ADMIN_PASSWORD`              | Seed admin password — **dev only, leave blank in prod** |
+| `MANAGER_EMAIL`               | Seed manager email — **dev only, leave blank in prod**  |
+| `MANAGER_PASSWORD`            | Seed manager password — **dev only, leave blank in prod** |
+| `USER_EMAIL`                  | Seed user email — **dev only, leave blank in prod**     |
+| `USER_PASSWORD`               | Seed user password — **dev only, leave blank in prod**  |
 
 ---
 
@@ -74,9 +79,6 @@ Tests use an in-memory SQLite database — no PostgreSQL required.
 ```bash
 # Run all tests
 pytest tests/ -v
-
-# With coverage
-pytest tests/ -v --cov=app --cov-report=term-missing
 ```
 
 ---

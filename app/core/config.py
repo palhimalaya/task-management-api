@@ -18,6 +18,10 @@ class Settings(BaseSettings):
 
     ADMIN_EMAIL: str | None = None
     ADMIN_PASSWORD: str | None = None
+    MANAGER_EMAIL: str | None = None
+    MANAGER_PASSWORD: str | None = None
+    USER_EMAIL: str | None = None
+    USER_PASSWORD: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

@@ -1,5 +1,6 @@
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.user import User
 
@@ -10,7 +11,7 @@ async def list_all_users(
     page: int = 1,
     page_size: int = 20,
 ) -> tuple[list[User], int]:
-    query = select(User)
+    query = select(User).options(selectinload(User.role))
 
     total = await db.scalar(select(func.count()).select_from(User)) or 0
 

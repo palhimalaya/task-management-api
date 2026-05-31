@@ -27,6 +27,10 @@ services:
       APP_ENV: development
       ADMIN_EMAIL: admin@example.com
       ADMIN_PASSWORD: changeme123
+      MANAGER_EMAIL: manager@example.com
+      MANAGER_PASSWORD: changeme123
+      USER_EMAIL: user@example.com
+      USER_PASSWORD: changeme123
     depends_on:
       db:
         condition: service_healthy
